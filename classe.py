@@ -1,33 +1,66 @@
+import pandas as pd
+import numpy as np
+
 class Fusee():
     """La classe fusee prend en attribut, la taille, le poids, le nombre de modules"""
-    def __init__(self, taille, poids):
-        self.taille = taille
-        self.poids = poids
-        self.nombre_modules = len(taille)
+    def __init__(self, name, nom_fichier):
+        database = pd.read_csv(nom_fichier, sep=',')
+        caracteristiques = database.loc[database.Name == name]
+        self.name = name
+        self.year = caracteristiques['Year'].values[0]
+        self.country = caracteristiques['Country'].values[0]
+        self.mission = caracteristiques['Mission'].values[0]
+        self.stage_number = caracteristiques['Stages number'].values[0]
+        self.height = caracteristiques['Height [m]'].values[0]
+        self.lift_off_mass = caracteristiques['Lift-off mass [tons]'].values[0]
+        self.payload_mass = caracteristiques['Payload mass [kg]'].values[0]
+        self.s1_length = caracteristiques['S1 length [m]'].values[0]
+        self.s1_diameter = caracteristiques['S1 diameter [m]'].values[0]
+        self.s1_thrust = caracteristiques['S1 thrust [kN]'].values[0]
+        self.s1_isp = caracteristiques['S1 Isp [s]'].values[0]
+        self.s1_m0 = caracteristiques['S1 m0 [tons]'].values[0]
+        self.s1_mp = caracteristiques['S1 mp [tons]'].values[0]
+        self.s2_length = caracteristiques['S2 length [m]'].values[0]
+        self.s2_diameter = caracteristiques['S2 diameter [m]'].values[0]
+        self.s2_thrust = caracteristiques['S2 thrust [kN]'].values[0]
+        self.s2_isp = caracteristiques['S2 Isp [s]'].values[0]
+        self.s2_m0 = caracteristiques['S2 m0 [tons]'].values[0]
+        self.s2_mp = caracteristiques['S2 mp [tons]'].values[0]
 
-    def _get_taille(self):
-        print("On accede a l'attribut taille")
-        return self._taille
-    def _set_taille(self, nouvelle_taille):
-        print("On modifie l'attribut taille")
-        self._taille = nouvelle_taille
-    taille = property(_get_taille, _set_taille)
+sputnik = Fusee('Sputnik','~rocket_database.csv')
 
-    def _get_poids(self):
-        print("On accede a l'attribut poids")
-        return self._poids
-    def _set_poids(self, nouveau_poids):
-        print("On modifie l'attribut poids")
-        self._poids = nouveau_poids
-    poids = property(_get_poids,_set_poids)
 
-    def _get_nombre_modules(self):
-        print("On accede a l'attribut nombre de module")
-        return self._nombre_modules
-    def _set_nombre_modules(self, nouveau_nombre_modules):
-        print ("On modifie l'attribut nombre_modules")
-        self._nombre_modules = nouveau_nombre_modules
-    nombre_modules = property(_get_nombre_modules, _set_nombre_modules)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
