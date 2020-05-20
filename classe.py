@@ -2,9 +2,12 @@ import pandas as pd
 import numpy as np
 
 class Fusee():
-    """La classe fusee prend en attribut, la taille, le poids, le nombre de modules"""
-    def __init__(self, name, nom_fichier):
-        database = pd.read_csv(nom_fichier, sep=',')
+    """La classe fusee prend en attribut les caracteristiques de la fusee
+    Pour pouvoir initialiser une fusee il faut avoir le fichier "rocket_databse.csv"
+    dans le dossier contenant la classe et les fonctions utiles
+    """
+    def __init__(self, name):
+        database = pd.read_csv('rocket_database.csv', sep=',')
         caracteristiques = database.loc[database.Name == name]
         self.name = name
         self.year = caracteristiques['Year'].values[0]
@@ -27,7 +30,8 @@ class Fusee():
         self.s2_m0 = caracteristiques['S2 m0 [tons]'].values[0]
         self.s2_mp = caracteristiques['S2 mp [tons]'].values[0]
 
-sputnik = Fusee('Sputnik','~rocket_database.csv')
+
+
 
 
 
