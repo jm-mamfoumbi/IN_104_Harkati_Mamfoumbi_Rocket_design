@@ -1,16 +1,13 @@
 import pandas as pd
 class Fusee:
-    """La classe fusee prend en attribut les caracteristiques de la fusee
-    Pour pouvoir initialiser une fusee il faut avoir le fichier "rocket_databse.csv"
-    dans le dossier contenant la classe et les fonctions utiles
-    """
-    def __init__(self, name, data_fusee=[]):
-        """To create a rocket item two possibilites
+            """To create a rocket item two possibilites
          either the name exist in the database then it is the only argument necessary
          it takes the parameters from the database
          or you want to create a rocket which doesn't exist 
          you have to enter the 19 parameters in the right order
          it returns an error if the name exists and you enter other parameters""""
+    def __init__(self, name, data_fusee=[]):
+
 
         db = pd.read_csv('rocket_database.csv', sep=',')
         self.config_type = dict(zip(db.columns, range(20)))
