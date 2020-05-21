@@ -1,35 +1,41 @@
 import pandas as pd
-import numpy as np
-
-class Fusee():
+class Fusee:
     """La classe fusee prend en attribut les caracteristiques de la fusee
     Pour pouvoir initialiser une fusee il faut avoir le fichier "rocket_databse.csv"
     dans le dossier contenant la classe et les fonctions utiles
     """
-    def __init__(self, name):
-        database = pd.read_csv('rocket_database.csv', sep=',')
-        caracteristiques = database.loc[database.Name == name]
-        self.name = name
-        self.year = caracteristiques['Year'].values[0]
-        self.country = caracteristiques['Country'].values[0]
-        self.mission = caracteristiques['Mission'].values[0]
-        self.stage_number = caracteristiques['Stages number'].values[0]
-        self.height = caracteristiques['Height [m]'].values[0]
-        self.lift_off_mass = caracteristiques['Lift-off mass [tons]'].values[0]
-        self.payload_mass = caracteristiques['Payload mass [kg]'].values[0]
-        self.s1_length = caracteristiques['S1 length [m]'].values[0]
-        self.s1_diameter = caracteristiques['S1 diameter [m]'].values[0]
-        self.s1_thrust = caracteristiques['S1 thrust [kN]'].values[0]
-        self.s1_isp = caracteristiques['S1 Isp [s]'].values[0]
-        self.s1_m0 = caracteristiques['S1 m0 [tons]'].values[0]
-        self.s1_mp = caracteristiques['S1 mp [tons]'].values[0]
-        self.s2_length = caracteristiques['S2 length [m]'].values[0]
-        self.s2_diameter = caracteristiques['S2 diameter [m]'].values[0]
-        self.s2_thrust = caracteristiques['S2 thrust [kN]'].values[0]
-        self.s2_isp = caracteristiques['S2 Isp [s]'].values[0]
-        self.s2_m0 = caracteristiques['S2 m0 [tons]'].values[0]
-        self.s2_mp = caracteristiques['S2 mp [tons]'].values[0]
+    def __init__(self, name, data_fusee=[]):
+        """To create a rocket item two possibilites
+         either the name exist in the database then it is the only argument necessary
+         it takes the parameters from the database
+         or you want to create a rocket which doesn't exist 
+         you have to enter the 19 parameters in the right order
+         it returns an error if the name exists and you enter other parameters""""
 
+        db = pd.read_csv('rocket_database.csv', sep=',')
+        self.config_type = dict(zip(db.columns, range(20)))
+
+        if data_fusee:
+            assert(name not in db.Name.values), 'Rocket already in the database'
+            assert (len(data_fusee) == 19), 'Some capabilities are missing'
+            new_row = dict(zip(db.columns, [name] + data_fusee))
+            new_db = db.append(dict([key, str(value)] for key, value in new_row.items()),
+                               ignore_index=True)
+            new_db.to_csv('rocket_database.csv', sep=',')
+        else:
+            data_fusee = db.loc[db.Name == name].values[0][1:]
+
+        self.configuration = [name]
+        for elt in data_fusee:
+            self.configuration.append(elt)
+        self.configuration[self.config_type['Name']]
+
+
+class Badtype(Exception):
+    pass
+
+class Badvalue(Exception):
+    pass
 
 
 
