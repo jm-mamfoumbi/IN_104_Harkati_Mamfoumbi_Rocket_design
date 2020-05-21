@@ -5,7 +5,7 @@ class Fusee:
          it takes the parameters from the database
          or you want to create a rocket which doesn't exist 
          you have to enter the 19 parameters in the right order
-         it returns an error if the name exists and you enter other parameters""""
+         it returns an error if the name exists and you enter other parameters"""
     def __init__(self, name, data_fusee=[]):
 
 
