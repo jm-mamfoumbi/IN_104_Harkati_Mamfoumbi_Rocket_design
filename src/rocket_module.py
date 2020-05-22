@@ -20,7 +20,7 @@ class Rocket():
         return True if self.spec[0] == 1 else False
         
 def rocket_consistence(name, info, spec):
-   	return True
+	return (spec[0] >= spec[3] + spec[9]) and (spec[9] == 0 or spec[10] != 0) and spec[7] > spec[8]
     
 def get_names(rl):
     rl_names = []

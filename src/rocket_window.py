@@ -4,6 +4,7 @@ import pandas as pd
 import sys
 import main
 from draw_rocket import Drawer
+import rocket_trajectories
 
 class Interface:
     def __init__(self):
@@ -36,13 +37,15 @@ class Interface:
         
         self.b_load = tk.Button(self.buttons, text="Charger", command=self.load) #charge .csv (clear) (affiche interface choix fusées)
         self.b_save = tk.Button(self.buttons, text="Enregistrer", command=self.save) #enregistre selectionné
-        self.b_traj = tk.Button(self.buttons, text="Trajectoire") #trajectoire
+        self.b_clear = tk.Button(self.buttons, text="Effacer", command=self.erase)
+        self.b_traj = tk.Button(self.buttons, text="Trajectoire", command=self.trajectory) #trajectoire
         self.b_quit = tk.Button(self.buttons, text="Quitter", command=sys.exit) #trajectoire
         
-        self.b_load.pack(expand=tk.YES, padx=25, pady=15, fill=tk.BOTH)
-        self.b_save.pack(expand=tk.YES, padx=25, pady=15, fill=tk.BOTH)
-        self.b_traj.pack(expand=tk.YES, padx=25, pady=15, fill=tk.BOTH)
-        self.b_quit.pack(expand=tk.YES, padx=25, pady=15, fill=tk.BOTH)
+        self.b_load.pack(expand=tk.YES, padx=25, pady=10, fill=tk.BOTH)
+        self.b_save.pack(expand=tk.YES, padx=25, pady=10, fill=tk.BOTH)
+        self.b_clear.pack(expand=tk.YES, padx=25, pady=10, fill=tk.BOTH)
+        self.b_traj.pack(expand=tk.YES, padx=25, pady=10, fill=tk.BOTH)
+        self.b_quit.pack(expand=tk.YES, padx=25, pady=10, fill=tk.BOTH)
         
         self.main_settings = tk.Frame(self.settings)
         self.stages_settings = tk.Frame(self.settings)
@@ -62,7 +65,7 @@ class Interface:
         self.stages_settings_canvas.create_window((40,4), window=self.stages_settings_canvas_frame, anchor="nw", tags="self.frame")
         
         self.s1_length = tk.Scale(self.stages_settings_canvas_frame, from_=5, to=50, orient=tk.HORIZONTAL)
-        self.s1_diameter = tk.Scale(self.stages_settings_canvas_frame, from_=5, to=150, orient=tk.HORIZONTAL) #dixieme
+        self.s1_diameter = tk.Scale(self.stages_settings_canvas_frame, from_=0, to=15, orient=tk.HORIZONTAL) #dixieme
         self.s1_thurst = tk.Scale(self.stages_settings_canvas_frame, from_=30, to=50000, orient=tk.HORIZONTAL)
         self.s1_lsp = tk.Scale(self.stages_settings_canvas_frame, from_=200, to=500, orient=tk.HORIZONTAL)
         self.s1_m0 = tk.Scale(self.stages_settings_canvas_frame, from_=2, to=3000, orient=tk.HORIZONTAL)
@@ -187,7 +190,6 @@ class Interface:
         buttons_frame.pack()
         
     def set_current(self):
-        print ("test")
         self.current_file = self.e_file.get()
         
     def select_all_rockets(self):
@@ -239,13 +241,13 @@ class Interface:
         self.window_list.destroy()
         
     def exit_save_all(self):
-        main.save_rockets(drawer.get_list(), self.current_file, True)
+        main.save_rockets(self.drawer.get_list(), self.current_file, True)
     
         self.window_list.grab_release()
         self.window_list.destroy()
         
     def exit_save_selected(self):
-        main.save_rockets([drawer.get_selected()], self.current_file, False)
+        main.save_rockets([self.drawer.get_selected()], self.current_file, False)
     
         self.window_list.grab_release()
         self.window_list.destroy()
@@ -259,10 +261,10 @@ class Interface:
         self.e_file.delete(0, tk.END)
         self.e_file.insert(0, self.current_file)
         
-        b_selected = tk.Button(self.window_list, text="Selected rocket", command=self.exit_load)
-        b_all = tk.Button(self.window_list, text="All rockets", command=self.exit_load)
+        b_selected = tk.Button(self.window_list, text="Selected rocket", command=self.exit_save_selected)
+        b_all = tk.Button(self.window_list, text="All rockets", command=self.exit_save_all)
         
-        l_warning = tk.Label(self.window_list, text="File will be erased if all", fg='red')
+        l_warning = tk.Label(self.window_list, text="File will be overwrited if all", fg='red')
         
         self.e_file.grid(row=0, column=0, columnspan=2, sticky="nsew")
         b_selected.grid(row=1, column=0, sticky="nsew")
@@ -272,11 +274,65 @@ class Interface:
         self.window_list.grab_set()
         self.window_list.attributes('-topmost', 'true')
         
+    def exit_erase_all(self):
+        self.drawer.delete_all()
+    
+        self.window_list.grab_release()
+        self.window_list.destroy()
+        
+    def exit_erase_selected(self):
+        self.drawer.delete_selected()
+    
+        self.window_list.grab_release()
+        self.window_list.destroy()
+        
+    def erase(self):
+        self.window_list = tk.Toplevel(self.window)
+        self.window_list.resizable(False, False)
+        
+        l_choice = tk.Label(self.window_list, text="Quoi effacer ?", fg='blue')
+        b_selected = tk.Button(self.window_list, text="Selected rocket", command=self.exit_erase_selected)
+        b_all = tk.Button(self.window_list, text="All rockets", command=self.exit_erase_all)
+        
+        l_choice.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        b_selected.grid(row=1, column=0, sticky="nsew")
+        b_all.grid(row=1, column=1, sticky="nsew")
+        
+        self.window_list.grab_set()
+        self.window_list.attributes('-topmost', 'true')
+        
+    def exit_trajectory(self):
+        rocket_trajectories.affichage_trajectoire(self.fs, float(self.e_angle.get()))
+        self.window_list.grab_release()
+        self.window_list.destroy()
+        
+    def trajectory(self):
+        if (self.drawer.get_selected() == None):
+            return
+        self.window_list = tk.Toplevel(self.window)
+        self.window_list.resizable(False, False)
+        rc = self.drawer.get_selected()
+        self.fs = [rc.get_name()] + rc.get_info() + rc.get_spec()
+        l_angle = tk.Label(self.window_list, text="Angle (in radian)", fg='blue')
+        self.e_angle = tk.Entry(self.window_list, fg = 'red', bg='blue')
+        self.e_angle .config(state='normal')
+        
+        b_selected = tk.Button(self.window_list, text="Draw trajectory", command=self.exit_trajectory)
+        
+        l_angle.pack()
+        self.e_angle.pack()
+        b_selected.pack()
+        
+        self.window_list.grab_set()
+        self.window_list.attributes('-topmost', 'true')
+        
     def key_event(self, event):
         if(event.keycode == 114):
             self.drawer.select_next(1)
         if(event.keycode == 113):
             self.drawer.select_next(-1)
+        if(event.keycode == 119):
+            self.drawer.delete_selected()
             
     def mouse_event(self, event):
         self.drawer.mouse(event.x, event.y)

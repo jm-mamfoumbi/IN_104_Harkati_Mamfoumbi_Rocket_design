@@ -10,7 +10,7 @@ class Drawer:
 		self.shift = 0
 		self.frame = tk.Frame(window, bg='#AA4AEE')
 		self.frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-		self.canvas = tk.Canvas(self.frame, bg='white')
+		self.canvas = tk.Canvas(self.frame, bg='gray95')
 		self.canvas.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
 		
 	def load_rockets(self, rocket_list):
@@ -58,6 +58,21 @@ class Drawer:
 		self.r_index = (direction + self.r_index) % len(self.rockets)
 		self.set_cursor()
 		self.draw()
+		
+	def delete_selected(self):
+		if(self.r_index > -1):
+			self.rockets.pop(self.r_index)
+			if (self.r_index == len(self.rockets)):
+				self.r_index -= 1
+			self.set_cursor()
+			self.draw()
+			
+	def delete_all(self):
+		if(self.r_index > -1):
+			self.rockets.clear()
+			self.r_index -= 1
+			self.set_cursor()
+			self.draw()
 	
 	def draw_rocket(self, x, y, data, selected, factor):
 		s1_x1 = x ; s1_y1 = y - int(factor *  data[3])
@@ -114,4 +129,6 @@ class Drawer:
 		return self.rockets
 		
 	def get_selected(self):
-		return self.rockets[r_index]
+		if (self.r_index > -1):
+			return self.rockets[self.r_index]
+		else: return None
