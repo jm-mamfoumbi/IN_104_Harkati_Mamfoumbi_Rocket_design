@@ -63,7 +63,7 @@ def trajectoire_2_etages(fusee, theta):
     D = T / (isp * g0) #propellant mass flow rate
     mp = (fusee[13] + fusee[19]) * 1000   # burning time
     tb = mp / D
-    m0 = fusee * 1000
+    m0 = fusee[6] * 1000
     mf = m0 - mp
     while t < tb and n < 1000000:
         xt = (((m0 * (isp * g0) ** 2) / T) * (1 - ((m0 - t * D) / m0) * (log((m0) / (m0 - t * D)) + 1)) * cos(theta)) * 10 ** -3  # x in kilometers
