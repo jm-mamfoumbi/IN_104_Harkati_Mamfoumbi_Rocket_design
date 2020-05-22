@@ -50,8 +50,7 @@ def trajectoire_2_etages(fusee, theta):
     """the function takes in argument a rocket item
     and an angle and returns
     """
-    if type(fusee)!=Fusee:
-        raise Badtype(fusee)
+
     x = []
     z = []
     dt = 10 ** (-1)
