@@ -90,9 +90,9 @@ def trajectoire(fusee, theta):
     """the function takes in argument a rocket item
     and an angle and returns
     """
-    if fusee[5] == 1:
+    if fusee[4] == 1:
         return trajectoire_1_etage(fusee, theta)
-    elif fusee[5] == 2:
+    elif fusee[4] == 2:
         return trajectoire_2_etages(fusee,theta)
     else :
         print("Unkown rocket object")
