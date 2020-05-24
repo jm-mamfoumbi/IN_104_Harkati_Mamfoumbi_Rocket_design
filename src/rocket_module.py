@@ -24,7 +24,7 @@ class Rocket():
         
 ''' Check if a Rocket object has physically consistent properties '''
 def rocket_consistence(name, info, spec):
-	return (spec[0] >= spec[3] + spec[9]) and (spec[1] > spec[7]) and (spec[7] > spec[8]) and (spec[9] == 0 or (spec[10] > 0 and spec[11] > 0 and spec[12] > 0 and spec[13] > 0 and spec[14] > 0 and spec[13] > spec[14]) and spec[13]>spec[14] and spec[1]>spec[7]+spec[14])
+	return (spec[0] >= spec[3] + spec[9]) and (spec[1] > spec[7]) and (spec[1] > spec[8]) and (spec[7] > spec[8]) and (spec[9] == 0 or (spec[10] > 0 and spec[11] > 0 and spec[12] > 0 and spec[13] > 0 and spec[14] > 0 and spec[13] > spec[14]) and spec[13]>spec[14] and  (spec[1] > spec[7] + spec[13]) and spec[1]>spec[7]+spec[14])
 	
 ''' Return the list of names of a list of Rockets '''
 def get_names(rl):
