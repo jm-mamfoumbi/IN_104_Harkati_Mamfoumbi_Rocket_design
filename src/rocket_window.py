@@ -126,7 +126,7 @@ class Interface:
         
         self.l_s2.pack()
         
-       	self.l_s2_length.pack()
+        self.l_s2_length.pack()
         self.s2_length.pack()
         self.l_s2_diameter.pack()
         self.s2_diameter.pack()
@@ -142,6 +142,10 @@ class Interface:
     ''' function that launch the GUI loop '''   
     def launch(self):
         self.window.mainloop()
+
+    def exit_window_list(self):
+        self.window_list.grab_release()
+        self.window_list.destroy()
     
     ''' exit function of the pop-up window associoted to the button *Create* '''   
     def exit_create(self):
@@ -155,9 +159,11 @@ class Interface:
                 
         if(main.rocket_consistence(name, info, spec)):
             self.drawer.add_rocket(name, info, spec)
-    
-        self.window_list.grab_release()
-        self.window_list.destroy()
+            self.exit_window_list()
+        else:
+            self.svc.set("Inconsistent rocket, could not create")
+            self.b_confirm.configure(text="Fermer", command=self.exit_window_list)
+
     ''' function called when *Create* button is clicked '''    
     def create(self):
         self.window_list = tk.Toplevel(self.window)
@@ -167,17 +173,20 @@ class Interface:
         
         buttons_frame = tk.Frame(self.window_list, width=300, height=300)
         
+        self.svc = tk.StringVar()
+
         l_name = tk.Label(buttons_frame, text="Name")
         l_year = tk.Label(buttons_frame, text="Year")
         l_country = tk.Label(buttons_frame, text="Country")
         l_mission = tk.Label(buttons_frame, text="Mission")
+        l_warning = tk.Label(buttons_frame, textvariable=self.svc, fg='red')
         
         self.e_name = tk.Entry(buttons_frame, fg = 'black', bg='white')
         self.e_year = tk.Entry(buttons_frame, fg = 'black', bg='white')
         self.e_country = tk.Entry(buttons_frame, fg = 'black', bg='white')
         self.e_mission = tk.Entry(buttons_frame, fg = 'black', bg='white')
         
-        b_confirm = tk.Button(buttons_frame, text="Validate", command=self.exit_create)
+        self.b_confirm = tk.Button(buttons_frame, text="Validate", command=self.exit_create)
         
         l_name.pack(padx=10, pady=5)
         self.e_name.pack(padx=10, pady=5)
@@ -187,8 +196,9 @@ class Interface:
         self.e_country.pack(padx=10, pady=5)
         l_mission.pack(padx=10, pady=5)
         self.e_mission.pack(padx=10, pady=5)
+        l_warning.pack()
         
-        b_confirm.pack(padx=10, pady=20, expand=True, fill=tk.BOTH)
+        self.b_confirm.pack(padx=10, pady=20, expand=True, fill=tk.BOTH)
         buttons_frame.pack()
     
     ''' Function that list all the rocket in a csv file''' 
@@ -251,27 +261,24 @@ class Interface:
 
     ''' exit function of the pop-up window associoted to the button *Load* '''   
     def exit_load(self):
-       	selection = self.list_rockets_loaded.curselection()
-       	rocket_list = [self.rl[i] for i in selection]
-       	self.drawer.load_rockets(rocket_list)
-       	self.drawer.draw()
-       	
-        self.window_list.grab_release()
-        self.window_list.destroy()
+        selection = self.list_rockets_loaded.curselection()
+        rocket_list = [self.rl[i] for i in selection]
+        self.drawer.load_rockets(rocket_list)
+        self.drawer.draw()
+        
+        self.exit_window_list()
     
     ''' exit function of the pop-up window associoted to the button *Save all* '''   
     def exit_save_all(self):
         main.save_rockets(self.drawer.get_list(), self.current_file, True)
     
-        self.window_list.grab_release()
-        self.window_list.destroy()
+        self.exit_window_list()
         
     ''' exit function of the pop-up window associoted to the button *Save selected* '''      
     def exit_save_selected(self):
         main.save_rockets([self.drawer.get_selected()], self.current_file, False)
     
-        self.window_list.grab_release()
-        self.window_list.destroy()
+        self.exit_window_list()
         
     ''' function called when *Save* button is clicked '''    
     def save(self):
@@ -300,15 +307,13 @@ class Interface:
     def exit_erase_all(self):
         self.drawer.delete_all()
     
-        self.window_list.grab_release()
-        self.window_list.destroy()
+        self.exit_window_list()
         
     ''' exit function of the pop-up window associoted to the button *Erase selected* '''      
     def exit_erase_selected(self):
         self.drawer.delete_selected()
     
-        self.window_list.grab_release()
-        self.window_list.destroy()
+        self.exit_window_list()
       
     ''' function called when *Erase* button is clicked '''      
     def erase(self):
@@ -332,8 +337,7 @@ class Interface:
             rocket_trajectories.affichage_trajectoire(self.fs, float(self.e_angle.get()))
         except ValueError:
             pass
-        self.window_list.grab_release()
-        self.window_list.destroy()
+        self.exit_window_list()
 
     ''' function called when *Trajectory* button is clicked '''    
     def trajectory(self):
