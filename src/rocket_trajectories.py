@@ -63,8 +63,6 @@ def trajectoire_2_etages(fusee, theta):
         raise Badvalue(fusee)
     if fusee[6]<fusee[13]+fusee[19]:
         raise Badvalue(fusee)
-    if T<0:
-        raise Badvalue(fusee)
     x = []
     z = []
     dt = 10 ** (-1)
