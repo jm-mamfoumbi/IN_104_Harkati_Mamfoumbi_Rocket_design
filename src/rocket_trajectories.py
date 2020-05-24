@@ -28,7 +28,7 @@ def trajectoire_1_etage(fusee, theta):
     tb = mp / D  # burning time
     m0 = float(fusee[6]) * 1000
     mf = m0 - mp
-    while t < tb and n < 1000000:
+    while t < tb :
         xt = (((m0 * (isp * g0) ** 2) / T) * (1 - ((m0 - t * D) / m0) * (log((m0) / (m0 - t * D)) + 1)) *
                 cos(theta)) * 10 ** -3  # x in kilometers
         x.append(xt)
@@ -48,7 +48,7 @@ def trajectoire_1_etage(fusee, theta):
         z.append(zt)
         n = n + 1
         t = t + dt
-    return [x[:n],z[:n],t,n]
+    return [x[:n-1],z[:n-1],t,n-1]
 
 
 def trajectoire_2_etages(fusee, theta):
@@ -59,9 +59,16 @@ def trajectoire_2_etages(fusee, theta):
         raise Badvalue(theta)
     if theta>pi :
         raise Badvalue(theta)
+    for i in range(6,20):
+        if fusee[i]<0:
+            raise Badvalue
     if fusee[6]<fusee[13]:
         raise Badvalue(fusee)
     if fusee[6]<fusee[13]+fusee[19]:
+        raise Badvalue(fusee)
+    if fusee[12]<fusee[13]:
+        raise Badvalue(fusee)
+    if fusee[18]<fusee[19]:
         raise Badvalue(fusee)
     x = []
     z = []
@@ -76,7 +83,7 @@ def trajectoire_2_etages(fusee, theta):
     tb = mp / D
     m0 = fusee[6] * 1000
     mf = m0 - mp
-    while t < tb and n < 1000000:
+    while t < tb :
         xt = (((m0 * (isp * g0) ** 2) / T) * (1 - ((m0 - t * D) / m0) * (log((m0) / (m0 - t * D)) + 1)) * cos(theta)) * 10 ** -3  # x in kilometers
         x.append(xt)
         zt= (((m0 * (isp * g0) ** 2) / T) * (1 - ((m0 - t * D) / m0) * (log((m0) / (m0 - t * D)) + 1)) * sin(theta) - 0.5 * g0 * t ** 2) * 10 ** -3  # z in kilometers
@@ -87,14 +94,14 @@ def trajectoire_2_etages(fusee, theta):
     vz = isp * g0 * log(m0 / mf) * sin(theta) - g0 * tb
     nb = n #index to get the position in x and z at the extinction time
     t = t - tb
-    while z[n - 1] > 0 and n < 100000:
+    while z[n - 1] > 0:
         xt = x[nb - 1] +  vx * t * 10 ** -3
         zt = z[nb - 1] +  vz * t * 10** -3 - 0.5 * g0 * (t**2) * 10 ** -3
         x.append(xt)
         z.append(zt)
         n = n + 1
         t = t + dt
-    return [x[:n],z[:n],t,n]
+    return [x[:n-1],z[:n-1],t,n]
 
 
 def trajectoire(fusee, theta):
@@ -116,16 +123,19 @@ def affichage_trajectoire(fusee,theta):
     x = L[0]
     z = L[1]
     n = len(x)
-    q = n/200
-    q = int(q)
-    for i in range(200):
+    q = n//200
+    for i in range(201):
         plt.xlabel(' axe des x (en km)')
         plt.ylabel(' axe des y (en km)')
         plt.title('trajectoire de {} pour un angle de {} radians'.format(fusee[0], round(theta, 3)))
         plt.plot(x[:i*q],z[:i*q])
         plt.pause(0.005)
+
     plt.xlabel(' axe des x (en km)')
     plt.ylabel(' axe des y (en km)')
     plt.title('trajectoire de {} pour un angle de {} radians'.format(fusee[0], round(theta, 3)))
     plt.plot(x,z)
+    plt.pause(0.005)
     plt.show()
+
+
