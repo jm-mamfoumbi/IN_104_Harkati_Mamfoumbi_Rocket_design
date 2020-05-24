@@ -2,12 +2,21 @@ from math import *
 from matplotlib import pyplot as plt
 
 ##original rockets in the database
-
+class Badvalue(Exception):
+    pass
 
 def trajectoire_1_etage(fusee, theta):
     """the function takes in argument a rocket item
     and an angle and returns
     """
+    if theta<0:
+        raise Badvalue(theta)
+    if theta>pi :
+        raise Badvalue(theta)
+    if fusee[6]<fusee[13]:
+        raise Badvalue(fusee)
+    if T<0:
+        raise Badvalue(fusee)
     x = []
     z = []
     dt = 10 ** (-1)
@@ -48,6 +57,16 @@ def trajectoire_2_etages(fusee, theta):
     """the function takes in argument a rocket item
     and an angle and returns
     """
+    if theta<0:
+        raise Badvalue(theta)
+    if theta>pi :
+        raise Badvalue(theta)
+    if fusee[6]<fusee[13]:
+        raise Badvalue(fusee)
+    if fusee[6]<fusee[13]+fusee[19]:
+        raise Badvalue(fusee)
+    if T<0:
+        raise Badvalue(fusee)
     x = []
     z = []
     dt = 10 ** (-1)
