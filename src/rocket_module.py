@@ -1,7 +1,7 @@
 ''' Rocket object implementing the modelisation of rockets '''
 class Rocket():
     #info : year, country, mission
-    #spec : Sn,[0]height, [1]lift_off_mass, [2]payload_mass, [3]si_length, [4]si_diameter, [5]thurst, [6]lsp, [7]m0, [8]mp, [9]si_length, [10]si_diameter, [11]thurst, [12]lsp, [13]m0, [14]mp
+    #spec : Sn[0], height[1], lift_off_mass[2], payload_mass[3], s1_length[4], s2_diameter[5], thurst[6], Isp[7], m0[8], mp[9], s2_length[10], s2_diameter[11], thurst[12], Isp[13], m0[14], mp[15]
     
     def __init__(self, name, info, spec):
         self.name = name
