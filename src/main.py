@@ -32,12 +32,12 @@ def save_rockets(rocket_list, filename, erase):
 	n_row = len(data.index)
 	
 	for i in range(0, len(rocket_list)):
-	    ri = rocket_list[i]
-	    name = ri.get_name()
-	    info = ri.get_info()
-	    spec = ri.get_spec()
-	    if (len(spec) == 10):
-	        spec.extend([0,0,0,0,0,0])
-	    data.loc[n_row + i] = [name] + info + spec
+		ri = rocket_list[i]
+		name = ri.get_name()
+		info = ri.get_info()
+		spec = ri.get_spec()
+		if (len(spec) == 10):
+			spec.extend([0,0,0,0,0,0])
+		data.loc[n_row + i] = [name] + info + spec
 	    
 	data.to_csv(filename, na_rep='', float_format='%.2f', index=False)

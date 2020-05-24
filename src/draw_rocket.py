@@ -13,14 +13,20 @@ class Drawer:
 		self.canvas = tk.Canvas(self.frame, bg='gray95')
 		self.canvas.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
 		
+	''' load rocket into the display sreen in order to be displayed '''
 	def load_rockets(self, rocket_list):
-		if (len(rocket_list) == 1):
+		if (rocket_list == []):
+			self.rockets.clear()
+			self.r_index = -1
+		elif (len(rocket_list) == 1):
 			self.rockets.insert(0,rocket_list[0])
+			self.r_index = 0
 		else:
 			self.rockets.clear()
 			self.rockets = rocket_list
-		self.r_index = 0
+			self.r_index = 0
 	
+	''' Add a rocket to the display screen by giving its properties '''
 	def add_rocket(self, name, info, spec):
 		if(spec[9] == 0):
 			spec = spec[:9]
@@ -34,6 +40,7 @@ class Drawer:
 		self.r_index = 0
 		self.draw()
 	
+	''' Check if the mouse is in on a displayed on the screen rocket '''
 	def mouse(self, x, y) :
 		init = 100;
 		x = x + self.shift;
@@ -43,22 +50,28 @@ class Drawer:
 				break
 			init += self.boxes[i][0]
 	
+	''' Establish where in the display screen space is situated the selected rocket '''
 	def set_cursor(self):
 		self.cursor_pos = 100
 		for i in range(0, self.r_index):
 			self.cursor_pos += self.boxes[i][0];
 	
 	
+	''' The rocket of index *index* become the selected rocket '''
 	def select(self, index):
-		self.r_index = index
-		self.set_cursor()
-		self.draw()
-		
+		if (index >= 0 and index < len(self.rockets)):
+			self.r_index = index
+			self.set_cursor()
+			self.draw()
+	
+	''' The rocket next - in the direction *direction* - to the selected rocket become the new selected rocket '''
 	def select_next(self, direction):
-		self.r_index = (direction + self.r_index) % len(self.rockets)
-		self.set_cursor()
-		self.draw()
+		if (self.r_index > -1):
+			self.r_index = (direction + self.r_index) % len(self.rockets)
+			self.set_cursor()
+			self.draw()
 		
+	''' Delete from the display screen the current selected rocket '''
 	def delete_selected(self):
 		if(self.r_index > -1):
 			self.rockets.pop(self.r_index)
@@ -67,18 +80,20 @@ class Drawer:
 			self.set_cursor()
 			self.draw()
 			
+	''' Delete all rocket displayed in the display screen '''
 	def delete_all(self):
 		if(self.r_index > -1):
 			self.rockets.clear()
-			self.r_index -= 1
+			self.r_index = -1
 			self.set_cursor()
 			self.draw()
 	
+	''' Draw a rocket of properties data in position (x,y) '''
 	def draw_rocket(self, x, y, data, selected, factor):
 		s1_x1 = x ; s1_y1 = y - int(factor *  data[3])
 		s1_x2 = x + int(factor * data[4]) ; s1_y2 = y
 		
-		ds1s2 = int(factor * data[4] - factor * data[6])/2
+		ds1s2 = (float(factor) * data[4] - float(factor) * data[6])/2
 		
 		s2_x1 = x + ds1s2 ; s2_y1 = s1_y1 - int(factor * data[5])
 		s2_x2 = x - ds1s2 + int(factor * data[6]) ; s2_y2 = s1_y1
@@ -86,20 +101,21 @@ class Drawer:
 		mid = (s1_x2 + s1_x1)/2
 		h = y - int(factor * data[2])
 		
-		self.canvas.create_rectangle(s1_x1 - self.shift,s1_y1,s1_x2- self.shift,s1_y2, fill='ivory3', width=2, outline='gray8')
+		self.canvas.create_rectangle(s1_x1 - self.shift,s1_y1,s1_x2- self.shift,s1_y2, fill='ivory3', width=1, outline='gray8')
 		if (int(data[5] != 0)) :
-			self.canvas.create_rectangle(s2_x1- self.shift,s2_y1,s2_x2- self.shift,s2_y2, fill='SkyBlue3', width=2, outline='gray8')
-			self.canvas.create_line(s2_x1- self.shift,s2_y1,mid - self.shift, h, width=2, fill='gray8')
-			self.canvas.create_line(s2_x2- self.shift,s2_y1,mid - self.shift, h, width=2, fill='gray8')
+			self.canvas.create_rectangle(s2_x1- self.shift,s2_y1,s2_x2- self.shift,s2_y2, fill='SkyBlue3', width=1, outline='gray8')
+			self.canvas.create_line(s2_x1- self.shift,s2_y1,mid - self.shift, h, width=1, fill='gray8')
+			self.canvas.create_line(s2_x2- self.shift,s2_y1,mid - self.shift, h, width=1, fill='gray8')
 		else :
-			self.canvas.create_line(s1_x1- self.shift, s1_y1, mid - self.shift, h, width=2, fill='gray8')
-			self.canvas.create_line(s1_x2- self.shift, s1_y1, mid - self.shift, h, width=2, fill='gray8')
+			self.canvas.create_line(s1_x1- self.shift, s1_y1, mid - self.shift, h, width=1, fill='gray8')
+			self.canvas.create_line(s1_x2- self.shift, s1_y1, mid - self.shift, h, width=1, fill='gray8')
 			
 		if (selected):
 			board = self.boxes[self.r_index]
 			self.canvas.create_rectangle(x - 25 - self.shift, y + 25 - board[1], x - 25 + board[0] - self.shift,y + 25, outline='red');
 			self.canvas.create_text(x + 5 - self.shift, y + 35, text=self.rockets[self.r_index].get_name())
 	
+	''' Draw all the rockets loaded in order to be drawn '''
 	def draw(self):
 		self.boxes.clear()
 		self.canvas.delete("all")
@@ -121,13 +137,16 @@ class Drawer:
 			space = space + self.boxes[len(self.boxes) - 1][0]
 		
 		self.canvas.create_rectangle(75 - self.shift , 650, space - self.shift, 660, fill='LightBlue4')
-			
+		
+	''' Accessor to the tk.frame of the display screen '''
 	def get_frame(self):
 		return self.frame
-		
+	
+	''' Accessor to the loaded rockets '''
 	def get_list(self):
 		return self.rockets
-		
+	
+	''' Accessor to the currently selected rocket'''
 	def get_selected(self):
 		if (self.r_index > -1):
 			return self.rockets[self.r_index]

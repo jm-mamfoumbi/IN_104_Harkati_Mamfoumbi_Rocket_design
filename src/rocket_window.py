@@ -8,7 +8,7 @@ import rocket_trajectories
 
 class Interface:
     def __init__(self):
-        self.current_file = 'rocket_database.csv'
+        self.current_file = '../resource/rocket_database.csv'
         self.window = tk.Tk()
         self.window.title("Rocket Launcher")
         self.window.geometry("1080x720")
@@ -57,7 +57,7 @@ class Interface:
         self.l_height = tk.Label(self.main_settings, text="Height")
         self.l_liftoff_mass= tk.Label(self.main_settings, text="Liftoff mass")
         self.l_payload_mass = tk.Label(self.main_settings, text="Payload mass")
-        self.s_height = tk.Scale(self.main_settings, from_=10, to=200, orient=tk.HORIZONTAL)
+        self.s_height = tk.Scale(self.main_settings, from_=10, to=120, orient=tk.HORIZONTAL)
         self.s_liftoff_mass = tk.Scale(self.main_settings, from_=2, to=3000, orient=tk.HORIZONTAL)
         self.s_payload_mass = tk.Scale(self.main_settings, from_=50, to=50000, orient=tk.HORIZONTAL)
           
@@ -139,9 +139,11 @@ class Interface:
         self.l_s2_mp.pack()
         self.s2_mp.pack()
 
+    ''' function that launch the GUI loop '''   
     def launch(self):
         self.window.mainloop()
-        
+    
+    ''' exit function of the pop-up window associoted to the button *Create* '''   
     def exit_create(self):
         name = self.e_name.get()
         info = [self.e_year.get(), self.e_country.get(), self.e_mission.get()]
@@ -156,7 +158,7 @@ class Interface:
     
         self.window_list.grab_release()
         self.window_list.destroy()
-        
+    ''' function called when *Create* button is clicked '''    
     def create(self):
         self.window_list = tk.Toplevel(self.window)
         self.window_list.resizable(False, False)
@@ -188,16 +190,28 @@ class Interface:
         
         b_confirm.pack(padx=10, pady=20, expand=True, fill=tk.BOTH)
         buttons_frame.pack()
-        
+    
+    ''' Function that list all the rocket in a csv file''' 
     def set_current(self):
         self.current_file = self.e_file.get()
-        
+        self.rl = main.load_rockets(self.current_file)
+        if (self.rl == []):
+            self.sv.set("File name does not exist !")
+            self.list_rockets_loaded.delete(0,tk.END)
+        else:
+            names = main.get_names(self.rl)
+            self.sv.set("")
+            self.list_rockets_loaded.insert(tk.END, *names)
+    
+    ''' Function that select all the rocket in the popup associated to the button *Load* ''' 
     def select_all_rockets(self):
         self.list_rockets_loaded.selection_set(0,self.list_rockets_loaded.size() - 1)
     
+    ''' Function that deselect all the rocket in the popup associated to the button *Load* '''   
     def deselect_all_rockets(self):
         self.list_rockets_loaded.selection_clear(0,self.list_rockets_loaded.size() - 1)
 
+    ''' function called when *Load* button is clicked '''    
     def load(self):
         self.window_list = tk.Toplevel(self.window)
         self.window_list.resizable(False, False)
@@ -215,22 +229,27 @@ class Interface:
         self.e_file.delete(0, tk.END)
         self.e_file.insert(0, self.current_file)
         
+        self.sv = tk.StringVar()
+        
         b_select_all = tk.Button(buttons_frame, text="Select all", command=self.select_all_rockets)
         b_deselect = tk.Button(buttons_frame, text="Deselect", command=self.deselect_all_rockets)
         b_validate = tk.Button(buttons_frame, text="Validate", command=self.exit_load)
         b_modify = tk.Button(buttons_frame, text="Modify file", command=self.set_current)
+        self.l_alert = tk.Label(buttons_frame, textvariable=self.sv, fg='red')
         
         b_select_all.grid(row=0, column=0, sticky="nsew")
         b_deselect.grid(row=0, column=1, sticky="nsew")
         self.e_file.grid(row=1, column=0, columnspan=2, sticky="nsew")
         b_modify.grid(row=2, column=0, columnspan=2, sticky="nsew")
-        b_validate.grid(row=3, column=0, columnspan=2, sticky="nsew")
+        self.l_alert.grid(row=3, column=0, columnspan=2, sticky="nsew")
+        b_validate.grid(row=4, column=0, columnspan=2, sticky="nsew")
         
         buttons_frame.grid(row=1, column=0, sticky="nsew")
         self.window_list.grab_set()
         self.window_list.attributes('-topmost', 'true')
         pass
 
+    ''' exit function of the pop-up window associoted to the button *Load* '''   
     def exit_load(self):
        	selection = self.list_rockets_loaded.curselection()
        	rocket_list = [self.rl[i] for i in selection]
@@ -239,19 +258,22 @@ class Interface:
        	
         self.window_list.grab_release()
         self.window_list.destroy()
-        
+    
+    ''' exit function of the pop-up window associoted to the button *Save all* '''   
     def exit_save_all(self):
         main.save_rockets(self.drawer.get_list(), self.current_file, True)
     
         self.window_list.grab_release()
         self.window_list.destroy()
         
+    ''' exit function of the pop-up window associoted to the button *Save selected* '''      
     def exit_save_selected(self):
         main.save_rockets([self.drawer.get_selected()], self.current_file, False)
     
         self.window_list.grab_release()
         self.window_list.destroy()
         
+    ''' function called when *Save* button is clicked '''    
     def save(self):
         self.window_list = tk.Toplevel(self.window)
         self.window_list.resizable(False, False)
@@ -274,18 +296,21 @@ class Interface:
         self.window_list.grab_set()
         self.window_list.attributes('-topmost', 'true')
         
+    ''' exit function of the pop-up window associoted to the button *Erase all* '''
     def exit_erase_all(self):
         self.drawer.delete_all()
     
         self.window_list.grab_release()
         self.window_list.destroy()
         
+    ''' exit function of the pop-up window associoted to the button *Erase selected* '''      
     def exit_erase_selected(self):
         self.drawer.delete_selected()
     
         self.window_list.grab_release()
         self.window_list.destroy()
-        
+      
+    ''' function called when *Erase* button is clicked '''      
     def erase(self):
         self.window_list = tk.Toplevel(self.window)
         self.window_list.resizable(False, False)
@@ -300,12 +325,17 @@ class Interface:
         
         self.window_list.grab_set()
         self.window_list.attributes('-topmost', 'true')
-        
+    
+    ''' exit function of the pop-up window associoted to the button *Trajectory* '''      
     def exit_trajectory(self):
-        rocket_trajectories.affichage_trajectoire(self.fs, float(self.e_angle.get()))
+        try:
+            rocket_trajectories.affichage_trajectoire(self.fs, float(self.e_angle.get()))
+        except ValueError:
+            pass
         self.window_list.grab_release()
         self.window_list.destroy()
-        
+
+    ''' function called when *Trajectory* button is clicked '''    
     def trajectory(self):
         if (self.drawer.get_selected() == None):
             return
@@ -326,6 +356,7 @@ class Interface:
         self.window_list.grab_set()
         self.window_list.attributes('-topmost', 'true')
         
+    ''' function that check the keyboard event '''    
     def key_event(self, event):
         if(event.keycode == 114):
             self.drawer.select_next(1)
@@ -333,7 +364,8 @@ class Interface:
             self.drawer.select_next(-1)
         if(event.keycode == 119):
             self.drawer.delete_selected()
-            
+    
+    ''' function that check the mouse event '''    
     def mouse_event(self, event):
         self.drawer.mouse(event.x, event.y)
             
